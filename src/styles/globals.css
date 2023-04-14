@@ -25,3 +25,36 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.song-info {
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100% - 110px); /* Adjust this value to control the width */
+}
+
+.grid-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.song-item {
+  display: flex;
+  flex-direction: column;
+  background-color: #e7e5e4;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.song-item-content {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.song-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
