@@ -33,12 +33,6 @@ const HomeScreen = () => {
         <h1 className="text-2xl font-bold mb-4 text-stone-800">
           Welcome to Aux Daddy!
         </h1>
-        <button
-          onClick={() => {signOut()}}
-          className="bg-stone-500 text-white px-4 m-2 py-2 rounded"
-        >
-          signOut
-        </button>
       </div>
       <div className="bg-stone-200 p-8 m-4 flex flex-col items-center rounded shadow-md">
         <label htmlFor="room-name" className="block text-md font-bold text-gray-700 mb-2">Create a Room</label>
