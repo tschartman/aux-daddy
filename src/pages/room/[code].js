@@ -244,38 +244,38 @@ export default function Room() {
           <input
             type="text"
             value={inputValue}
-            placeholder="Type here..."
-            className="w-96 m-4 px-3 py-6 text-3xl text-gray-700 bg-white border border-gray-300 rounded shadow focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            placeholder="Search Music..."
+            className="w-full md:w-96 m-4 px-3 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded shadow focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             onChange={(event) => setInputValue(event.target.value)}
             onFocus={handleInputFocus}
             onBlur={handleInputBlur}
           />
           {showSearchResults && (
-          <div className="w-96 z-10 h-96 my-40 z bg-white border border-gray-300 rounded shadow absolute overflow-auto">
-            <ul className="divide-y divide-gray-300">
-              {searchResults.map((item) => (
-                <li key={item.id} className="p-4 flex items-center space-x-4 cursor-pointer hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200" onClick={() => handleSongSelection(item)}>
-                  <img className="w-16 h-16 rounded" src={item.album.images[0]?.url} alt={item.name} />
-                  <div>
-                    <h3 className="text-gray-700 font-medium">{item.name}</h3>
-                    <p className="text-sm text-gray-500">{item.artists.map((artist) => artist.name).join(', ')}</p>
-                  </div>
-                </li>
-              ))}
+            <div className="w-full md:w-96 z-10 h-96 mt-32 bg-white border border-gray-300 rounded shadow absolute overflow-auto">
+              <ul className="divide-y divide-gray-300">
+                {searchResults.map((item) => (
+                  <li key={item.id} className="p-4 flex items-center space-x-4 cursor-pointer hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200" onClick={() => handleSongSelection(item)}>
+                    <img className="w-16 h-16 rounded" src={item.album.images[0]?.url} alt={item.name} />
+                    <div>
+                      <h3 className="text-gray-700 font-medium">{item.name}</h3>
+                      <p className="text-sm text-gray-500">{item.artists.map((artist) => artist.name).join(', ')}</p>
+                    </div>
+                  </li>
+                ))}
               </ul>
             </div>
           )}
-          {room?.songs && room.songs.length > 0 && 
-          <div className="flex items-center">
-            <button onClick={(e) => { e.stopPropagation(); handlePlaySong(room.songs); }} className="px-2 py-1 bg-green-500 text-white rounded my-2 mx-2">Play All</button>
-            <button onClick={(e) => { e.stopPropagation(); handleDeleteAllSongs(); }} className="px-2 py-1 bg-red-500 text-white rounded my-2 mx-2">Delete All</button>
-          </div>}
+          {room?.songs && room.songs.length > 0 &&
+            <div className="flex items-center">
+              <button onClick={(e) => { e.stopPropagation(); handlePlaySong(room.songs); }} className="px-2 py-1 bg-green-500 text-white rounded my-2 mx-2">Play All</button>
+              <button onClick={(e) => { e.stopPropagation(); handleDeleteAllSongs(); }} className="px-2 py-1 bg-red-500 text-white rounded my-2 mx-2">Delete All</button>
+            </div>}
           <div className="w-full max-w-2xl overflow-auto">
             <div className="grid-list my-10 relative">
               {room?.songs.map((song) => (
                 <div
                   key={song.id}
-                  className="song-item p-4 bg-stone-200 text-gray-700 shadow-md rounded"
+                  className="song-item p-4 bg-stone-200 text-gray-700 shadow-md rounded flex items-center"
                   onClick={() => handleSongSelection(song)}
                 >
                   <div className="song-item-content">

@@ -41,16 +41,19 @@ body {
 .song-item {
   display: flex;
   flex-direction: column;
-  background-color: #e7e5e4;
-  padding: 16px;
-  border-radius: 8px;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: #fff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .song-item-content {
   display: flex;
+  width: 100%;
   align-items: center;
-  margin-bottom: 8px;
 }
 
 .song-item-actions {
