@@ -1,8 +1,8 @@
 import React, {useState} from "react";
-import {signOut, useSession} from "next-auth/react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/router";
+import AppHeader from "./AppHeader";
 
 const createRoomAsync = async (roomName) => {
   const {data} = await axios.post('/api/room', {name: roomName});
@@ -28,11 +28,8 @@ const HomeScreen = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-stone-100">
+    <div className="min-h-screen flex flex-col items-center bg-stone-100">
       <div className="p-8 rounded">
-        <h1 className="text-2xl font-bold mb-4 text-stone-800">
-          Welcome to Aux Daddy!
-        </h1>
       </div>
       <div className="bg-stone-200 p-8 m-4 flex flex-col items-center rounded shadow-md">
         <label htmlFor="room-name" className="block text-md font-bold text-gray-700 mb-2">Create a Room</label>

@@ -4,6 +4,7 @@ import axios from 'axios'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import useDebounce from '@/hooks/useDebounce'
+import AppHeader from '@/components/AppHeader'
 
 const getRoomByCode = (code) => {
   return axios.get(`/api/room/${code}`)
