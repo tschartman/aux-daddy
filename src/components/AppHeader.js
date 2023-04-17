@@ -3,7 +3,7 @@ import styled, { keyframes } from "styled-components";
 
 const AppHeader = () => {
   return (
-    <div className="bg-stone-200 py-2 px-4 w-full">
+    <div className="bg-stone-50 py-2 px-4 w-full">
       <div className="container mx-auto flex items-center justify-between">
         <div></div>
         <div>

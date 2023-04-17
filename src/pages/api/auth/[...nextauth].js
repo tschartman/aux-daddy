@@ -3,6 +3,11 @@ import SpotifyProvider from 'next-auth/providers/spotify'
 import { refreshAccessToken } from '@/lib/spotify';
 
 export const authOptions = {
+  events: {
+    error: async (message, object) => {
+      console.error("Error:", message, object);
+    },
+  },
   secret: process.env.AUTH_SECRET,
   providers: [
     // OAuth authentication providers...
