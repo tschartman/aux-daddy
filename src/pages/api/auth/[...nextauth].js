@@ -3,18 +3,13 @@ import SpotifyProvider from 'next-auth/providers/spotify'
 import { refreshAccessToken } from '@/lib/spotify';
 
 export const authOptions = {
-  events: {
-    error: async (message, object) => {
-      console.error("Error:", message, object);
-    },
-  },
   secret: process.env.AUTH_SECRET,
   providers: [
     // OAuth authentication providers...
     SpotifyProvider({
       clientId: process.env.SPOTIFY_CLIENT_ID,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-      authorization: { params: { scope: 'user-modify-playback-state' } }
+      authorization: { params: { scope: 'user-modify-playback-state user-read-email user-read-private' } }
     })
   ],
   callbacks: {
