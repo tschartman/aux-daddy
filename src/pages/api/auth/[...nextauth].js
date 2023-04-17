@@ -14,8 +14,8 @@ export const authOptions = {
   ],
   callbacks: {
     async session({session, token}) {
+      session.user = token.user;
       session.accessToken = token.accessToken;
-      session.refreshToken = token.refreshToken;
       session.expiresIn = token.expiresIn;
       return session;
     },
