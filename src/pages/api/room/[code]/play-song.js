@@ -33,7 +33,7 @@ export default async function handler(req, res) {
         res.status(404).json({ error: 'No host found' });
         return;
       }
-
+      
       await playSong(songUris, accessToken);
       res.status(200).json({ message: 'Song played successfully' });
     } catch (error) {

@@ -10,6 +10,11 @@ const createRoomAsync = async (roomName) => {
   return data;
 }
 
+const joinRoom = async (roomCode) => {
+  const {data} = await axios.post(`/api/room/${roomCode}/join`);
+  return data;
+}
+
 const HomeScreen = () => {
   const [roomName, setRoomName] = useState('');
   const [roomCode, setRoomCode] = useState('');
@@ -30,8 +35,13 @@ const HomeScreen = () => {
     }
   });
 
-  const navigateToRoom = (roomCode) => {
-    router.push(`/room/${roomCode}`);
+  const navigateToRoom = async (roomCode) => {
+
+    const res = await joinRoom(roomCode);
+
+    if (res.message === 'Joined room') {
+      router.push(`/room/${roomCode}`);
+    }
   }
 
 

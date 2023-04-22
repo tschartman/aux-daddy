@@ -44,7 +44,7 @@ export async function getRoomAccessToken(user) {
 
   const account = await prisma.account.findFirst({
     where: {
-      userId: combinedQuery.roomHostId,
+      userId: combinedQuery.roomHost.id,
     },
   });
 
