@@ -34,7 +34,7 @@ export async function getRoomAccessToken(user) {
         include: {
           user: {
             include: {
-              account: true,
+              accounts: true,
             }
           },
         }
