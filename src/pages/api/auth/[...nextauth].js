@@ -1,9 +1,11 @@
 import NextAuth from 'next-auth'
 import SpotifyProvider from 'next-auth/providers/spotify'
-import { refreshAccessToken } from '@/lib/spotify';
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import prisma from "@/lib/prisma";
 
 export const authOptions = {
   secret: process.env.AUTH_SECRET,
+  adapter: PrismaAdapter(prisma),
   providers: [
     // OAuth authentication providers...
     SpotifyProvider({
@@ -13,31 +15,11 @@ export const authOptions = {
     })
   ],
   callbacks: {
-    async session({session, token}) {
-      session.user = token.user;
-      session.accessToken = token.accessToken;
-      session.expiresIn = token.expiresIn;
+    async session({session, token, user}) {
+      if (user) {
+        session.user = user;
+      }
       return session;
-    },
-    async jwt({token, account}) {
-      if (account && account.access_token) {
-        token.accessToken = account.access_token;
-        token.refreshToken = account.refresh_token;
-        token.expiresAt = account.expires_at * 1000;
-      }
-
-      // Return previous token if the access token has not expired yet
-      if (Date.now() < token.expiresAt) {
-        return token;
-      }
-  
-      // Access token has expired, try to update it
-      const { accessToken, expiresIn } = await refreshAccessToken(token.refreshToken);
-      return {
-        ...token,
-        accessToken,
-        expiresAt: Date.now() + expiresIn * 1000,
-      };
     }
   }
 };

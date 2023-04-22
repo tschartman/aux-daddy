@@ -1,4 +1,5 @@
 import axios from 'axios';
+import prisma from './prisma';
 
 export async function refreshAccessToken(refreshToken) {
   try {
@@ -20,6 +21,70 @@ export async function refreshAccessToken(refreshToken) {
   } catch (error) {
     throw error;
   }
+}
+
+export async function getRoomAccessToken(user) {
+
+  const combinedQuery = await prisma.room.findFirst({
+    where: {
+      code: user.roomId,
+    },
+    include: {
+      roomHost: {
+        include: {
+          user: {
+            include: {
+              account: true,
+            }
+          },
+        }
+      },
+    },
+  });
+
+  const account = await prisma.account.findFirst({
+    where: {
+      userId: combinedQuery.roomHostId,
+    },
+  });
+
+  if (account) {
+    return account.access_token;
+  }
+
+  return null;
+}
+
+
+export async function getAccessToken(user) {
+  
+  const account = await prisma.account.findFirst({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  if (account) {
+    if (Date.now() < account.expires_at * 1000) {
+      return account.access_token;
+    }
+
+    const {accessToken, expiresIn} = await refreshAccessToken(account.refresh_token);
+
+    await prisma.account.update({
+      where: {
+        id: account.id,
+      },
+      data: {
+        access_token: accessToken,
+        expires_at: Date.now() + expiresIn * 1000,
+      },
+    });
+
+    return accessToken;
+  }
+
+  return null;
 }
 
 export function getSpotifyApi(accessToken) {

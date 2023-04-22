@@ -2,7 +2,8 @@ import React, {useState} from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/router";
-import AppHeader from "./AppHeader";
+import { useSession } from "next-auth/react"
+
 
 const createRoomAsync = async (roomName) => {
   const {data} = await axios.post('/api/room', {name: roomName});
@@ -13,6 +14,12 @@ const HomeScreen = () => {
   const [roomName, setRoomName] = useState('');
   const [roomCode, setRoomCode] = useState('');
   const router = useRouter();
+
+  const { data: session } = useSession()
+
+  if (session && session.user && session.user.roomId) {
+    router.push(`/room/${session.user.roomId}`);
+  }
 
   const {mutate: createRoom} = useMutation(createRoomAsync, {
     onSuccess: (data) => {
@@ -26,6 +33,7 @@ const HomeScreen = () => {
   const navigateToRoom = (roomCode) => {
     router.push(`/room/${roomCode}`);
   }
+
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-stone-100">

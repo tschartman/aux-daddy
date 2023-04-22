@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth/next"
 import { authOptions } from './auth/[...nextauth]'
 import { getSpotifyApi } from "@/lib/spotify";
+import { getAccessToken } from "@/lib/spotify";
 
 const searchSpotify = async (query, accessToken) => {
   const spotifyApi = getSpotifyApi(accessToken);
@@ -27,7 +28,8 @@ export default async function handler(req, res) {
       }
 
       const session = await getServerSession(req, res, authOptions)
-      const searchResults = await searchSpotify(query, session.accessToken);
+      const accessToken = await getAccessToken(session.user);
+      const searchResults = await searchSpotify(query, accessToken);
       res.status(200).json(searchResults);
     } catch (error) {
       res.status(500).json({ error: 'Error fetching data from Spotify API.' });
