@@ -11,7 +11,7 @@ export const authOptions = {
     SpotifyProvider({
       clientId: process.env.SPOTIFY_CLIENT_ID,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-      authorization: { params: { scope: 'user-modify-playback-state' } }
+      authorization: { params: { scope: 'user-modify-playback-state user-read-playback-state user-read-currently-playing' } }
     })
   ],
   callbacks: {

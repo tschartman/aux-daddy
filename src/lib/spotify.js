@@ -49,7 +49,7 @@ export async function getRoomAccessToken(user) {
   });
 
   if (account) {
-    return account.access_token;
+    return inspectAccessToken(account);
   }
 
   return null;
@@ -65,27 +65,32 @@ export async function getAccessToken(user) {
   });
 
   if (account) {
-    if (Date.now() < account.expires_at * 1000) {
-      return account.access_token;
-    }
-
-    const {accessToken, expiresIn} = await refreshAccessToken(account.refresh_token);
-
-    await prisma.account.update({
-      where: {
-        id: account.id,
-      },
-      data: {
-        access_token: accessToken,
-        expires_at: Date.now() + expiresIn * 1000,
-      },
-    });
-
-    return accessToken;
+    return inspectAccessToken(account);
   }
 
   return null;
 }
+
+const inspectAccessToken = async (account) => {
+
+  if (Date.now() < account.expires_at) {
+    return account.access_token;
+  }
+
+  const {accessToken, expiresIn} = await refreshAccessToken(account.refresh_token);
+
+  await prisma.account.update({
+    where: {
+      id: account.id,
+    },
+    data: {
+      access_token: accessToken,
+      expires_at: BigInt(Date.now()) + (BigInt(expiresIn) * 1000n),
+    },
+  });
+
+  return accessToken; 
+};
 
 export function getSpotifyApi(accessToken) {
   return axios.create({

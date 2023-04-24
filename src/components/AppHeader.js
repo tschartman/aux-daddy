@@ -1,21 +1,56 @@
+import { useState, useRef, useEffect } from "react";
 import { signOut } from "next-auth/react";
 import styled, { keyframes } from "styled-components";
 
 const AppHeader = () => {
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const dropdownRef = useRef(null); 
+
+  const toggleDropdown = () => {
+    setDropdownVisible(!dropdownVisible);
+  };
+
+  
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setDropdownVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      window.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="bg-stone-50 py-2 px-4 w-full">
+    <div className="bg-stone-100 py-2 px-4 w-full">
       <div className="container mx-auto flex items-center justify-between">
-        <div></div>
-        <div>
+        <div className="flex-grow"></div>
+        <div className="flex-shrink-0 pl-8">
           <AnimatedGradientText>AuxDaddy</AnimatedGradientText>
         </div>
-        <div>
+        <div className="flex-grow flex justify-end relative"> {/* Add 'relative' class */}
           <button
-            onClick={() => signOut()}
-            className="bg-stone-800 text-white px-4 py-2 rounded"
+            onClick={toggleDropdown}
+            className="text-2xl px-4 py-2 focus:outline-none"
           >
-            Log out
+            &#8942;
           </button>
+          {dropdownVisible && (
+            <div
+              ref={dropdownRef}
+              className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg"
+            >
+              <button
+                onClick={() => signOut()}
+                className="w-full text-left bg-white text-gray-800 px-4 py-2 hover:bg-gray-200 rounded-t"
+              >
+                Log out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

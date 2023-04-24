@@ -1,19 +1,9 @@
 import React, {useState} from "react";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react"
-
-
-const createRoomAsync = async (roomName) => {
-  const {data} = await axios.post('/api/room', {name: roomName});
-  return data;
-}
-
-const joinRoom = async (roomCode) => {
-  const {data} = await axios.post(`/api/room/${roomCode}/join`);
-  return data;
-}
+import withAuth from '@/components/withAuth'
+import { createRoomAsync, joinRoom } from "@/services/roomService";
 
 const HomeScreen = () => {
   const [roomName, setRoomName] = useState('');
@@ -86,4 +76,4 @@ const HomeScreen = () => {
   );
 }
 
-export default HomeScreen;
+export default withAuth(HomeScreen);

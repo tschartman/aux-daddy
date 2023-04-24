@@ -4,19 +4,16 @@ import { getSpotifyApi } from "@/lib/spotify";
 import { getRoomAccessToken } from "@/lib/spotify";
 
 
-const playSong = async (uris, accessToken) => {
+const addSongToPlaylist = async (uri, accessToken) => {
   const spotifyApi = getSpotifyApi(accessToken);
-
-  return await spotifyApi.put('/me/player/play', {
-    uris: uris,
-  })
+  return await spotifyApi.post(`/me/player/queue?uri=${encodeURIComponent(uri)}`);
 };
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
-      const { songUris } = req.body;
-      if (!songUris || !songUris.length) {
+      const { songUri } = req.body;
+      if (!songUri) {
         res.status(400).json({ error: 'Missing required property' });
         return;
       }
@@ -33,12 +30,11 @@ export default async function handler(req, res) {
         res.status(404).json({ error: 'No host found' });
         return;
       }
-      await playSong(songUris, accessToken);
-      res.status(200).json({ message: 'Song played successfully'});
-      return;
+      
+      await addSongToPlaylist(songUri, accessToken);
+      res.status(200).json({ message: 'Added Song To Playlist' });
     } catch (error) {
       res.status(500).json({ error: 'Error fetching data from Spotify API.' });
-      return;
     }
   } else {
     res.status(405).json({ error: 'Method not allowed.' });
