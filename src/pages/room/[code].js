@@ -9,6 +9,7 @@ import SearchBar from '@/components/Room/SearchBar';
 import SearchResults from '@/components/Room/SearchResults';
 import SongListItem from '@/components/Room/SongListItem';
 import RoomControls from '@/components/Room/RoomControls';
+import DeviceDropdown from '@/components/DeviceDropdown'
 import { getRoomByCode, addSongToRoom, deleteSongFromRoom, deleteAllSongsFromRoom, leaveRoom, deleteRoom } from '@/services/roomService';
 import { searchSpotify, getPlayback, playSong, addToPlaylist } from '@/services/spotifyService';
 import { addSongMutationConfig, deleteSongMutationConfig, deleteAllSongsMutationConfig } from '@/mutations/roomMutations';
@@ -25,6 +26,7 @@ function Room() {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [userPanelVisible, setUserPanelVisible] = useState(false);
   const [playbackPanelVisible, setPlaybackPanelVisible] = useState(false);
+  const [selectedDevice, setSelectedDevice] = useState({})
 
   const debouncedSearchTerm = useDebounce(inputValue, 500);
 
@@ -94,25 +96,36 @@ function Room() {
 
   const room = data?.data;
 
-  if (isLoading) {
-    return <div>Loading...</div>
+  if (isLoading || router.isFallback) {
+    return (
+      <div className="min-h-screen flex flex-col items-center bg-stone-100">
+        Loading...
+      </div>
+
+    );
   }
 
-  if (isError) {
-    return <div>Failed to load room</div>
+  if (isError || !room) {
+    return (
+      <div className="min-h-screen flex flex-col items-center bg-stone-100">
+        Failed to load room
+      </div>
+    );
   }
 
   async function handlePlayAllSongs(songs) {
-    let response = await playSong(code, songs, session);
+    let response = await playSong(code, songs, selectedDevice);
     if (response.status === 200) {
       handleDeleteAllSongs()
+      queryClient.invalidateQueries('playback')
     }
   }
   
   async function handlePlaySong(song) {
-    let response = await playSong(code, [song], session);
+    let response = await playSong(code, [song], selectedDevice);
     if (response.status === 200) {
       handleDeleteSong(song)
+      queryClient.invalidateQueries('playback')
     }
   }
   
@@ -121,6 +134,7 @@ function Room() {
     const response = await addToPlaylist(code, song);
     if (response.status === 200) {
       handleDeleteSong(song)
+      queryClient.invalidateQueries('playback')
     }
   }
 
@@ -136,8 +150,11 @@ function Room() {
     const confirmDelete = window.confirm("Are you sure you want to delete the room for all users?");
   
     if (confirmDelete) {
-      await deleteRoom(code, session);
-      router.push('/');
+      const res = await deleteRoom(code, session);
+      console.log(res)
+      if (res.message === "Deleted Room") {
+        router.push('/');
+      }
     }
   }
 
@@ -146,7 +163,9 @@ function Room() {
   
     if (confirmDelete) {
       await leaveRoom(code, session);
-      router.push('/');
+      if (res.message === "Left Room") {
+        router.push('/');
+      }
     }
   }
 
@@ -184,12 +203,23 @@ function Room() {
         >
           <i className="fas fa-list"></i>
         </button>
+        <button
+          onClick={() => queryClient.invalidateQueries(['room', code])}
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mx-2"
+        >
+          <i className="fas fa-rotate-right"></i>
+        </button>
       </div>
       <div className="p-8 rounded">
         <div className="flex flex-col items-center">
           <h1 className="text-2xl font-bold mb-4 text-stone-800">
             {room.name} #{room.code}
           </h1>
+          <DeviceDropdown
+            selectedDevice={selectedDevice}
+            handleDeviceChange={setSelectedDevice}
+            devices={playbackData?.devices.devices}
+          />
           <SearchBar
             inputValue={inputValue}
             setInputValue={setInputValue}
@@ -221,8 +251,20 @@ function Room() {
               ))}
             </div>
           </div>
-          <UsersPanel visible={userPanelVisible} togglePanel={toggleUserPanel} users={room.users} host={room.roomHost} />
-          <PlaybackPanel visible={playbackPanelVisible} togglePanel={togglePlaybackPanel} code={code} playback={playbackData?.currently_playing} queue={playbackData?.queue}  />
+          <UsersPanel
+            visible={userPanelVisible}
+            togglePanel={toggleUserPanel}
+            users={room.users}
+            host={room.roomHost}
+          />
+          <PlaybackPanel
+            visible={playbackPanelVisible}
+            togglePanel={togglePlaybackPanel}
+            code={code}
+            currentlyPlaying={playbackData?.queue?.currently_playing}
+            queue={playbackData?.queue?.queue}
+            playback={playbackData?.playback}
+          />
           </div>
         </div>
     </div>

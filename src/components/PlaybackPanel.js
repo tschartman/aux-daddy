@@ -4,24 +4,28 @@ import MusicPlayer from '@/components/MusicPlayer'
 import {resumePlayback, pausePlayback, nextTrack, previousTrack} from '@/services/spotifyService'
 import { useQueryClient } from '@tanstack/react-query'
 
-const PlaybackPanel = ({ visible, togglePanel, playback, queue, code}) => {
+const PlaybackPanel = ({ visible, togglePanel, playback, currentlyPlaying, queue, code}) => {
 
   const queryClient = useQueryClient();
 
-  const handleResume = () => {
-    resumePlayback(code);    
+  const handleResume = async () => {
+    await resumePlayback(code);    
+      queryClient.invalidateQueries(['playback'])
   };
 
-  const handlePause = () => {
-    pausePlayback(code);
+  const handlePause = async () => {
+   await pausePlayback(code);
+   queryClient.invalidateQueries(['playback'])
   };
 
-  const handleNext = () => {
-    nextTrack(code);
+  const handleNext = async () => {
+   await nextTrack(code);
+   queryClient.invalidateQueries(['playback'])
   };
 
-  const handlePrevious = () => {
-    previousTrack(code);
+  const handlePrevious = async () => {
+   await previousTrack(code);
+   queryClient.invalidateQueries(['playback'])
   };
 
   return (
@@ -40,10 +44,12 @@ const PlaybackPanel = ({ visible, togglePanel, playback, queue, code}) => {
           <i className="fas fa-rotate-right"></i>
         </button>
       </div>
+
       <div className="min-h-screen">
         {playback ? (
         <MusicPlayer
           playback={playback}
+          currentlyPlaying={currentlyPlaying}
           queue={queue}
           handlePrevious={handlePrevious}
           handlePause={handlePause}

@@ -1,11 +1,10 @@
 import React from 'react';
 
-const SongListItem = ({ song, handleSongSelection, handlePlaySong, handleDeleteSong, handleAddToPlaylist }) => {
+const SongListItem = ({ song, handlePlaySong, handleDeleteSong, handleAddToPlaylist }) => {
   return (
     <div
       key={song.id}
       className="song-item p-4 bg-stone-200 text-gray-700 shadow-md rounded flex items-center"
-      onClick={() => handleSongSelection(song)}
     >
       <div className="song-item-content">
         <img src={song.imageUrl} alt="Album cover" className="w-16 h-16 mr-4" />

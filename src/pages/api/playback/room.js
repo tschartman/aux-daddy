@@ -5,8 +5,13 @@ import { getRoomAccessToken } from "@/lib/spotify";
 
 const getPlayback = async (accessToken) => {
   const spotifyApi = getSpotifyApi(accessToken);
-  const response = await spotifyApi.get('/me/player/queue');
-  return response.data;
+
+  const aggregatedResponse = await Promise.all([spotifyApi.get('/me/player/queue'), spotifyApi.get('/me/player'), spotifyApi.get('/me/player/devices')])
+
+  const responses = aggregatedResponse.map(res => res.data)
+
+  return {queue: responses[0], playback: responses[1], devices: responses[2]};
+
 };
 
 export default async function handler(req, res) {

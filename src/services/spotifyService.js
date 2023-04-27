@@ -28,17 +28,19 @@ export const pausePlayback = async (code) => {
   await axios.post(`/api/room/${code}/pause-playback`);
 }
 
-export const skipSong = async (code) => {
+export const nextTrack = async (code) => {
   await axios.post(`/api/room/${code}/skip-song`);
 }
 
-export const previousSong = async (code) => {
+export const previousTrack = async (code) => {
   await axios.post(`/api/room/${code}/previous-song`);
 }
 
-export const playSong = async (code, songs) => {
+export const playSong = async (code, songs, deviceId) => {
+  console.log(songs)
   return await axios.post(`/api/room/${code}/play-song`, {
     songUris: songs.map((song) => song.songUri),
+    deviceId
   });
 }
 

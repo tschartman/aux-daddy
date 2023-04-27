@@ -1,20 +1,20 @@
 
-const MusicPlayer = ({ playback, queue, handlePrevious, handlePlay, handlePause, handleNext }) => {
+const MusicPlayer = ({ playback, currentlyPlaying, queue, handlePrevious, handleResume, handlePlay, handlePause, handleNext }) => {
 
   return (
     <div className="bg-gray-100">
-      {playback && (
+      {currentlyPlaying && (
         <div className="flex flex-col items-center text-center mt-10">
           <h2 className="text-2xl font-bold mb-4">Now Playing</h2>
           <img
             className="rounded"
-            src={playback.album.images[0].url}
-            alt={playback.name}
+            src={currentlyPlaying.album.images[0].url}
+            alt={currentlyPlaying.name}
             width="200"
             height="200"
           />
-          <p className="mt-4">{playback.name}</p>
-          <p>{playback.artists.map((artist) => artist.name).join(', ')}</p>
+          <p className="mt-4">{currentlyPlaying.name}</p>
+          <p>{currentlyPlaying.artists.map((artist) => artist.name).join(', ')}</p>
         </div>
       )}
 
@@ -36,7 +36,7 @@ const MusicPlayer = ({ playback, queue, handlePrevious, handlePlay, handlePause,
           ) : (
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mx-2"
-              onClick={handlePlay}
+              onClick={handleResume}
             >
               <i className="fas fa-play"></i>
             </button>

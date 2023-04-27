@@ -4,18 +4,35 @@ import { getSpotifyApi } from "@/lib/spotify";
 import { getRoomAccessToken } from "@/lib/spotify";
 
 
-const playSong = async (uris, accessToken) => {
+const playSong = async (uris, deviceId, accessToken) => {
   const spotifyApi = getSpotifyApi(accessToken);
 
-  return await spotifyApi.put('/me/player/play', {
+  const requestBody = {
     uris: uris,
-  })
+  };
+  
+  if (deviceId) {
+
+    const activePlayback = await spotifyApi.get('/me/player')
+
+    if (!activePlayback.data) {
+      const test = await spotifyApi.put('/me/player', {
+        device_ids: [deviceId]
+      })
+    }
+
+    requestBody.device_id = deviceId;
+    return await spotifyApi.put('/me/player/play', requestBody)
+  } else {
+    return await spotifyApi.put('/me/player/play', requestBody)
+
+  }
 };
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
-      const { songUris } = req.body;
+      const { songUris, deviceId } = req.body;
       if (!songUris || !songUris.length) {
         res.status(400).json({ error: 'Missing required property' });
         return;
@@ -33,10 +50,11 @@ export default async function handler(req, res) {
         res.status(404).json({ error: 'No host found' });
         return;
       }
-      await playSong(songUris, accessToken);
+      await playSong(songUris, deviceId, accessToken);
       res.status(200).json({ message: 'Song played successfully'});
       return;
     } catch (error) {
+      console.log(error.message)
       res.status(500).json({ error: 'Error fetching data from Spotify API.' });
       return;
     }
