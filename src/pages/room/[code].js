@@ -30,7 +30,13 @@ function Room() {
 
   const debouncedSearchTerm = useDebounce(inputValue, 500);
 
-  const addSongMutation = useMutation(addSongToRoom, addSongMutationConfig(queryClient));
+  const addSongMutation = useMutation({
+    mutationFn: addSongToRoom,
+    onSuccess: () => {
+      queryClient.invalidateQueries('room', [code])
+    }
+  });
+
   const deleteSongMutation = useMutation(deleteSongFromRoom, deleteSongMutationConfig(queryClient));
   const deleteAllSongsMutation = useMutation(deleteAllSongsFromRoom, deleteAllSongsMutationConfig(queryClient));
 
@@ -86,6 +92,7 @@ function Room() {
     () => getRoomByCode(code),
     {
       enabled: !!code,
+      refetchOnWindowFocus: true
     }
   );
 
@@ -204,7 +211,10 @@ function Room() {
           <i className="fas fa-list"></i>
         </button>
         <button
-          onClick={() => queryClient.invalidateQueries(['room', code])}
+          onClick={() => {
+            queryClient.invalidateQueries(['room', code])
+            queryClient.invalidateQueries(['playback'])
+          }}
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mx-2"
         >
           <i className="fas fa-rotate-right"></i>

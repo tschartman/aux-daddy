@@ -1,5 +1,16 @@
 export const addSongMutationConfig = (queryClient) => ({
     onMutate: async ({ code, song, session }) => {
+
+      queryClient.invalidateQueries(["room", code]);
+
+      const mappedSong = {
+        imageUrl: song.album.images[0]?.url,
+        name: song.name,
+        artist: song.artists.map((artist) => artist.name).join(', '),
+        songUri: song.uri,
+        id: song.id
+      }
+
       // Optimistic update: Store the previous state and update the UI
       const previousRoomData = queryClient.getQueryData(["room", code]);
   
@@ -8,7 +19,7 @@ export const addSongMutationConfig = (queryClient) => ({
         ...oldData,
         data: {
           ...oldData.data,
-          songs: [...oldData.data.songs, song],
+          songs: [...oldData.data.songs, mappedSong],
         },
       }));
   
@@ -19,11 +30,7 @@ export const addSongMutationConfig = (queryClient) => ({
       if (context.previousRoomData) {
         queryClient.setQueryData(["room", code], context.previousRoomData);
       }
-    },
-    onSettled: () => {
-      // Invalidate the room query to refetch the data after the mutation
-      queryClient.invalidateQueries(["room", code]);
-    },
+    }
 });
 
 export const deleteSongMutationConfig = (queryClient) => ({
@@ -46,10 +53,7 @@ export const deleteSongMutationConfig = (queryClient) => ({
   onError: (error, variables, context) => {
     // Revert the UI changes if an error occurs
     queryClient.setQueryData(["room", code], context.previousData);
-  },
-  onSettled: () => {
-    queryClient.invalidateQueries(["room", code]);
-  },
+  }
 });
 
 export const deleteAllSongsMutationConfig = (queryClient) => ({

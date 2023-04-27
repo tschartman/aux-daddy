@@ -10,22 +10,22 @@ const playSong = async (uris, deviceId, accessToken) => {
   const requestBody = {
     uris: uris,
   };
+
+  const activePlayback = await spotifyApi.get('/me/player')
+
   
-  if (deviceId) {
-
-    const activePlayback = await spotifyApi.get('/me/player')
-
-    if (!activePlayback.data) {
-      const test = await spotifyApi.put('/me/player', {
-        device_ids: [deviceId]
+  if (!activePlayback.data) {
+    if (deviceId) {
+      await spotifyApi.put('/me/player', {
+        device_ids: [deviceId],
+        play: true
       })
-    }
 
-    requestBody.device_id = deviceId;
-    return await spotifyApi.put('/me/player/play', requestBody)
+      requestBody.device_id = deviceId;
+      return await spotifyApi.put('/me/player/play', requestBody)
+    }
   } else {
     return await spotifyApi.put('/me/player/play', requestBody)
-
   }
 };
 

@@ -7,7 +7,11 @@ const withAuth = (Component) => {
     const { data: session, status } = useSession();
 
     if (status === 'loading') {
-      return <div>Loading...</div>;
+      return (
+        <div className="min-h-screen flex flex-col items-center bg-stone-100">
+          Loading...
+        </div>
+      );
     }
 
     if (!session) {
